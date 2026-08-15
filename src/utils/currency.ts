@@ -1,16 +1,19 @@
 export function formatCurrencyMask(value: string): string {
-  const digits = value.replace(/\D/g, '');
-  if (!digits) {
-    return '';
-  }
-  const number = Number(digits) / 100;
+  const digitsOnly = value.replace(/\D/g, '');
+  if (!digitsOnly) return '';
 
-  if (isNaN(number)) {
-    return '';
-  }
-
-  return number.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+  const amount = Number(digitsOnly) / 100;
+  return amount.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
   });
+}
+
+export function parseCurrencyToNumber(value: string | undefined): number {
+  if (!value) return 0;
+
+  const digitsOnly = value.replace(/\D/g, '');
+  if (!digitsOnly) return 0;
+
+  return Number(digitsOnly) / 100;
 }

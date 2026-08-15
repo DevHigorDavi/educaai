@@ -71,7 +71,7 @@ export const simulationFormSteps = [
   },
 
   {
-    id: 'goalDeadLine',
+    id: 'goalDeadline',
     icon: CalendarClock,
     title: 'Prazo desejado',
     question: 'Em quantos meses você planeja atingir esse objetivo?',
@@ -87,10 +87,8 @@ export const simulationFormSteps = [
       emojiIcon: '✨',
     },
   },
-] satisfies FormStepProps[]
+] satisfies FormStepProps[];
 export type SimulationFormData = Record<
   (typeof simulationFormSteps)[number]['id'],
   string
->
-
-
+>;
