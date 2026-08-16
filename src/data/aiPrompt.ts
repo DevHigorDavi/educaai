@@ -1,8 +1,25 @@
 import { calcMonthlySavings, type SimulationRecord } from '@/utils/simulation';
 
+// Helper para converter valores que podem vir formatados como string (ex: "R$ 1.500,00") para número
+export const parseCurrency = (
+  value: string | number | undefined | null
+): number => {
+  if (typeof value === 'number') return value;
+  if (!value) return 0;
+
+  const cleaned = value
+    .toString()
+    .replace(/[R$\s]/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+
+  return parseFloat(cleaned) || 0;
+};
+
+// Estrutura JSON esperada pela API
 const RESPONSE_SCHEMA = {
   feasibility: {
-    status: 'viable' | 'needs_adjustment' | 'unfeasible',
+    status: 'viable | needs_adjustment | unfeasible',
     content:
       '<Análise objetiva sobre se a meta é atingível no prazo com o valor disponível. Mencione os números relevantes>',
   },
@@ -36,36 +53,38 @@ export function buildAIPrompt(simulation: SimulationRecord) {
     simulation;
 
   const monthlySavings = calcMonthlySavings(simulation);
-  const monthlySavingsNeeded =
-    parseCurrency(goalAmount) / parseInt(goalDeadline);
+  const parsedGoalAmount = parseCurrency(goalAmount);
+  const parsedGoalDeadline = parseInt(String(goalDeadline), 10) || 1;
+
+  const monthlySavingsNeeded = parsedGoalAmount / parsedGoalDeadline;
+  const balanceAfterSavings = monthlySavings - monthlySavingsNeeded;
 
   return `Você é um educador financeiro especializado em finanças pessoais.
 Analise os dados abaixo e gere um diagnóstico financeiro personalizado com linguagem clara, didática e encorajadora, voltado para pessoas sem conhecimento financeiro. O diagnóstico será exibido diretamente ao usuário no app, fale sempre em segunda pessoa ("você tem...", "sua meta...").
 
 Dados da simulação:
-- Renda mensal bruta: ${income}
-- Custos fixos essenciais: ${expenses}
-- Dívidas e parcelas mensais: ${debts}
-- Valor disponível por mês: ${monthlySavings} reais
+- Renda mensal bruta: R$ ${parseCurrency(income).toFixed(2)}
+- Custos fixos essenciais: R$ ${parseCurrency(expenses).toFixed(2)}
+- Dívidas e parcelas mensais: R$ ${parseCurrency(debts).toFixed(2)}
+- Valor disponível por mês: R$ ${monthlySavings.toFixed(2)}
 - Meta: ${goalName}
-- Custo da meta: ${goalAmount}
-- Prazo desejado: ${goalDeadline} meses
-- Economia mensal necessária para atingir a meta no prazo: ${monthlySavingsNeeded} reais
-- Saldo após reserva para a meta: ${monthlySavings - monthlySavingsNeeded} reais
+- Custo da meta: R$ ${parsedGoalAmount.toFixed(2)}
+- Prazo desejado: ${parsedGoalDeadline} meses
+- Economia mensal necessária para atingir a meta no prazo: R$ ${monthlySavingsNeeded.toFixed(2)}
+- Saldo após reserva para a meta: R$ ${balanceAfterSavings.toFixed(2)}
 
-Retorne APENAS um JSON válido, sem texto adicional, sem blocos de código, neste formato exato:
+Retorne APENAS um JSON válido, sem texto adicional, sem blocos de código Markdown, neste formato exato:
 
-${RESPONSE_SCHEMA}
-
+${JSON.stringify(RESPONSE_SCHEMA, null, 2)}
 
 Regras:
-- Todos os textos em português do Btrasil
-- Máximo de 4 itens por Lista
+- Todos os textos em português do Brasil
+- Máximo de 4 itens por lista
 - Seja específico ao citar valores calculados
 - Não repita informações entre seções
 - Nunca use markdown dentro dos valores do JSON
 - Para o campo "feasibility.status", use os seguintes critérios:
-   - "viable": saldo após reservba para a meta é maior ou igual a 0
+   - "viable": saldo após reserva para a meta é maior ou igual a 0
    - "needs_adjustment": saldo negativo de até 20% do valor da economia mensal necessária
-   - "unfeasible": saldo negativo superior a 20% do valor da economia mensal necessária `;
+   - "unfeasible": saldo negativo superior a 20% do valor da economia mensal necessária`;
 }

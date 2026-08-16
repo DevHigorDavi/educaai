@@ -1,3 +1,4 @@
+import { AIInsightsCard } from '@/components/features/Simulation/SimulationResults/AIInsightCardProps';
 import { Card } from '@/components/features/Simulation/SimulationResults/Card';
 import { PageHero } from '@/components/shared/PageHero';
 import { useSimulationStorage } from '@/hooks/useSimulationStorage';
@@ -55,15 +56,13 @@ export function SimulationResultsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="bg-card order-2 rounded-2xl p-6 shadow-[4px_4px_18px_0px_rgba(0,0,0,0.2)] lg:order-1 lg:col-span-2">
-          Painel de Insights
-        </div>
+        <AIInsightsCard simulationId={data.id} />
         <div className="order-1 flex flex-col gap-6 lg:order-2">
           <Card
             icon={Wallet}
             label="Renda mensal"
             value={data.income}
-            subtitle={'Renda totalç bruta por mês'}
+            subtitle={'Renda total bruta por mês'}
           />
           <Card
             icon={CreditCardIcon}
