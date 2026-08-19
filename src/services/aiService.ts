@@ -7,6 +7,8 @@ interface GeminiResponse {
 }
 
 export interface InsightData {
+  diagnosts: any;
+  diagnostis: any;
   feasibility: {
     status: 'viable' | 'needs_adjustment' | 'unfeasible';
     content: string;
@@ -41,6 +43,8 @@ const callGeminiAPI = async (prompt: string) => {
   });
 
   if (!response.ok) {
+    const errorDetails = await response.json().catch(() => ({}));
+    console.error('Detalhes exatos do erro Gemini:', errorDetails);
     throw new Error(`Erro na requisição: $(response.status)`);
   }
 

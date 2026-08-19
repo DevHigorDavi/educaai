@@ -11,6 +11,9 @@
   --secondary-button: #e0e0e0;
   --input: #fcfcfe;
   --color-red-500: #ef4443;
+
+  --skeleton-base-color: #e2e3ed;
+  --skeleton-highlight-color: #f0f0f6;
 }
 
 [data-theme='dark'] {
@@ -25,6 +28,8 @@
   --secondary-button: #27272a;
   --input: #232131;
   --color-red-500: #ef4443;
+  --skeleton-base-color: #2a2933;
+  --skeleton-highlight-color: #3a3945;
 }
 
 @theme {
@@ -40,4 +45,6 @@
   --color-input: var(--input);
   --color-red-500: var(--color-red-500);
   --font-sans: 'inter', ui-sans-serif, system-ui, sans-serif;
+  --color-skeleton-base: var(--skleton-base-color);
+  --color-skeleton-highlight: var(--skeleton-highlight-color);
 }
